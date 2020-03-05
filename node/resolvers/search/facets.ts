@@ -6,6 +6,13 @@ interface EitherFacet extends SearchFacet {
   Children?: EitherFacet[]
 }
 
+enum FilterType {
+  TEXT = "TEXT",
+  NUMBER = "NUMBER",
+  CATEGORYTREE = "CATEGORYTREE",
+  BRAND = "BRAND"
+}
+
 const addSelected = (
   facets: EitherFacet[],
   { query, map }: { query: string; map: string }
@@ -61,6 +68,20 @@ const baseFacetResolvers = {
 }
 
 export const resolvers = {
+  Facet: {
+    quantity: prop('Quantity'),
+    name: prop('Name'),
+    link: prop('Link'),
+    linkEncoded: prop('LinkEncoded'),
+    value: prop('Value'),
+    id: prop('Id'),
+    children: prop('Children'),
+    key: prop('Map'),
+    href: ({ Link }: { Link: string }) => {
+      const [linkPath] = Link.split('?')
+      return linkPath
+    },
+  },
   FilterFacet: {
     ...baseFacetResolvers,
 
@@ -98,6 +119,34 @@ export const resolvers = {
     name: prop('Name'),
   },
   Facets: {
+    filters: ({
+      CategoriesTrees = [],
+      Brands = [],
+      SpecificationFilters = {},
+      queryArgs,
+    }: SearchFacets & { queryArgs: { query: string; map: string } }) => {
+      const brands ={
+        facets: addSelected(Brands, queryArgs),
+        type: FilterType.BRAND
+      }
+
+      const catregoriesTrees = { 
+        facets: addSelected(CategoriesTrees, queryArgs),
+        type: FilterType.CATEGORYTREE
+      }
+                
+      const specificationFilters = toPairs(SpecificationFilters).map(
+        ([filterName, filterFacets]) => {
+          return {
+            name: filterName,
+            facets: addSelected(filterFacets, queryArgs),
+            type: FilterType.TEXT
+          }
+        }
+      )
+
+      return [brands, catregoriesTrees, ...specificationFilters]
+    },
     departments: ({
       Departments = [],
       CategoriesTrees = [],

@@ -16,3 +16,8 @@ type SearchMetadata {
   titleTag: String
   metaTagDescription: String
 }
+
+input SelectedFacet {
+  key: String
+  value: String
+}

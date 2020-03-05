@@ -31,6 +31,10 @@ type Query {
     """
     map: String = ""
     """
+    Selected facets
+    """
+    selectedFacets: [SelectedFacet]
+    """
     Filter by category. {a}/{b} - {a} and {b} are categoryIds
     """
     category: String = ""
@@ -78,9 +82,17 @@ type Query {
     """
     query: String = ""
     """
+    Search term
+    """
+    fullText: String = ""
+    """
     Defines terms types: Brand, Category, Department e.g.: c,b
     """
     map: String = ""
+    """
+    Selected facets
+    """
+    selectedFacets: [SelectedFacet]
   ): SearchMetadata @cacheControl(scope: PUBLIC, maxAge: MEDIUM) @withSegment
 
   """
@@ -91,6 +103,10 @@ type Query {
     Terms that is used in search e.g.: eletronics/samsung
     """
     query: String = ""
+    """
+    Search term
+    """
+    fullText: String = ""
     """
     Defines terms types: Brand, Category, Department e.g.: c,b
     """
@@ -156,9 +172,17 @@ type Query {
     """
     query: String = ""
     """
+    Search term
+    """
+    fullText: String = ""
+    """
     Defines terms types: Brand, Category, Department e.g.: c,b
     """
     map: String = ""
+    """
+    Selected facets
+    """
+    selectedFacets: [SelectedFacet]
     """
     If true, uses isAvailablePerSalesChannel_ parameter on query with segment's sales channel.
     """

@@ -28,7 +28,7 @@ import { resolvers as recommendationResolvers } from './recommendation'
 import { resolvers as breadcrumbResolvers } from './searchBreadcrumb'
 import { resolvers as skuResolvers } from './sku'
 import { resolvers as productPriceRangeResolvers } from './productPriceRange'
-import { SearchCrossSellingTypes } from './utils'
+import { SearchCrossSellingTypes, getMapAndPriceRangeFromSelectedFacets } from './utils'
 import * as searchStats from '../stats/searchStats'
 import { toCompatibilityArgs, hasFacetsBadArgs } from './newURLs'
 import { PATH_SEPARATOR, SPEC_FILTER, MAP_VALUES_SEP, FACETS_BUCKET } from './constants'
@@ -221,6 +221,12 @@ export const queries = {
     const {
       clients: { search, vbase },
     } = ctx
+  
+    if (args.selectedFacets) {
+      const [map] = getMapAndPriceRangeFromSelectedFacets(args.selectedFacets)
+      args.map = map
+    }
+
     args.map = args.map && decodeURIComponent(args.map)
     const translatedQuery = await translateToStoreDefaultLanguage(
       ctx,
@@ -363,6 +369,13 @@ export const queries = {
       clients: { search },
     } = ctx
     const queryTerm = args.query
+
+    if (args.selectedFacets) {
+      const [map, priceRange] = getMapAndPriceRangeFromSelectedFacets(args.selectedFacets)
+      args.map = map
+      args.priceRange = priceRange
+    }
+
     args.map = args.map && decodeURIComponent(args.map)
   
     if (queryTerm == null || test(/[?&[\]=]/, queryTerm)) {
@@ -443,6 +456,12 @@ export const queries = {
         `The query term contains invalid characters. query=${queryTerm}`
       )
     }
+
+    if (args.selectedFacets) {
+      const [map] = getMapAndPriceRangeFromSelectedFacets(args.selectedFacets)
+      args.map = map
+    }
+
     const query = await translateToStoreDefaultLanguage(ctx, args.query || '')
     const translatedArgs = {
       ...args,
