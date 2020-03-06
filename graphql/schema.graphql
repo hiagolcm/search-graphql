@@ -27,6 +27,10 @@ type Query {
     """
     query: String = ""
     """
+    Search term
+    """
+    fullText: String = ""
+    """
     Defines terms types: Brand, Category, Department e.g.: c,b
     """
     map: String = ""
