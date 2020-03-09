@@ -7,10 +7,11 @@ interface EitherFacet extends SearchFacet {
 }
 
 enum FilterType {
-  TEXT = "TEXT",
-  NUMBER = "NUMBER",
-  CATEGORYTREE = "CATEGORYTREE",
-  BRAND = "BRAND"
+  TEXT = 'TEXT',
+  NUMBER = 'NUMBER',
+  CATEGORYTREE = 'CATEGORYTREE',
+  BRAND = 'BRAND',
+  PRICERANGE = 'PRICERANGE',
 }
 
 const addSelected = (
@@ -71,16 +72,10 @@ export const resolvers = {
   Facet: {
     quantity: prop('Quantity'),
     name: prop('Name'),
-    link: prop('Link'),
-    linkEncoded: prop('LinkEncoded'),
     value: prop('Value'),
     id: prop('Id'),
     children: prop('Children'),
     key: prop('Map'),
-    href: ({ Link }: { Link: string }) => {
-      const [linkPath] = Link.split('?')
-      return linkPath
-    },
   },
   FilterFacet: {
     ...baseFacetResolvers,
@@ -123,29 +118,42 @@ export const resolvers = {
       CategoriesTrees = [],
       Brands = [],
       SpecificationFilters = {},
+      PriceRanges = [],
       queryArgs,
     }: SearchFacets & { queryArgs: { query: string; map: string } }) => {
-      const brands ={
+      const brands = {
         facets: addSelected(Brands, queryArgs),
-        type: FilterType.BRAND
+        type: FilterType.BRAND,
       }
 
-      const catregoriesTrees = { 
+      const catregoriesTrees = {
         facets: addSelected(CategoriesTrees, queryArgs),
-        type: FilterType.CATEGORYTREE
+        type: FilterType.CATEGORYTREE,
       }
-                
+
       const specificationFilters = toPairs(SpecificationFilters).map(
         ([filterName, filterFacets]) => {
           return {
             name: filterName,
             facets: addSelected(filterFacets, queryArgs),
-            type: FilterType.TEXT
+            type: FilterType.TEXT,
           }
         }
       )
 
-      return [brands, catregoriesTrees, ...specificationFilters]
+      const priceRanges = {
+        facets: PriceRanges.map(priceRange => {
+          const priceRangeRegex = /^de-(.*)-a-(.*)$/
+          const groups = priceRange.Slug.match(priceRangeRegex)
+          return {
+            ...priceRange,
+            range: { from: groups![1], to: groups![2] },
+          }
+        }),
+        type: FilterType.PRICERANGE,
+      }
+
+      return [brands, catregoriesTrees, ...specificationFilters, priceRanges]
     },
     departments: ({
       Departments = [],

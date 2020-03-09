@@ -78,6 +78,12 @@ type Query {
     If you want faster searches and do not care about most up to date prices and promotions, use skip value.
     """
     simulationBehavior: SimulationBehavior = default
+    """
+    If `VTEX`, all the products will be solved by VTEX API.
+    """
+    productOriginVtex: Boolean = false 
+    operator: Operator
+    fuzzy: Float
   ): ProductSearch @cacheControl(scope: SEGMENT, maxAge: SHORT) @withSegment
 
   searchMetadata(

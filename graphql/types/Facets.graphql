@@ -3,17 +3,20 @@ type QueryArgs {
   query: String
 }
 
+type Range {
+  from: Float
+  to: Float
+}
+
 type Facet {
   id: ID
   quantity: Int!
   name: String @translatableV2
-  link: String!
-  linkEncoded: String!
-  href: String
   key: String
   value: String!
-  selected: Boolean!
+  selected: Boolean
   children: [Facet]
+  range: Range
 }
 
 enum FilterType {
@@ -21,6 +24,7 @@ enum FilterType {
   NUMBER
   CATEGORYTREE
   BRAND
+  PRICERANGE
 }
 
 type Filter {

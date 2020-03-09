@@ -5,6 +5,16 @@ type ProductSearch {
   metaTagDescription: String
   breadcrumb: [SearchBreadcrumb]
   canonical: String
+  suggestion: SearchSuggestions
+}
+
+type SearchSuggestions {
+  searches: [SuggestionSearches]
+}
+
+type SuggestionSearches {
+  term: String
+  count: String
 }
 
 type SearchBreadcrumb {
@@ -15,6 +25,11 @@ type SearchBreadcrumb {
 type SearchMetadata {
   titleTag: String
   metaTagDescription: String
+}
+
+enum Operator {
+  and
+  or
 }
 
 input SelectedFacet {
